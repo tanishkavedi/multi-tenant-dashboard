@@ -12,9 +12,9 @@ const chartData = [
 ]
 
 export default function Dashboard() {
-  const navigate  = useNavigate()
-  const user      = JSON.parse(localStorage.getItem('user'))
-  const org       = JSON.parse(localStorage.getItem('org'))
+  const navigate = useNavigate()
+  const user = JSON.parse(localStorage.getItem('user'))
+  const org = JSON.parse(localStorage.getItem('org'))
 
   const handleLogout = () => {
     localStorage.clear()
@@ -40,10 +40,10 @@ export default function Dashboard() {
         {/* Nav links */}
         <nav style={{ flex: 1, marginTop: 12 }}>
           {[
-            { label: '🏠  Dashboard',    path: '/dashboard' },
-            { label: '👥  Members',      path: '/members'   },
-            { label: '💳  Billing',      path: '/billing'   },
-            { label: '⚙️  Settings',     path: '/settings'  },
+            { label: '🏠  Dashboard', path: '/dashboard' },
+            { label: '👥  Members', path: '/members'   },
+            { label: '💳  Billing', path: '/billing'   },
+            { label: '⚙️  Settings', path: '/settings'  },
           ].map(item => (
             <div
               key={item.path}
@@ -82,10 +82,10 @@ export default function Dashboard() {
         {/* Metric cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
           {[
-            { label: 'Total Users',  value: '1,284', change: '+12% this month', color: '#4caf50' },
-            { label: 'Active Now',   value: '47',    change: 'across 3 orgs',   color: '#888'    },
-            { label: 'API Calls',    value: '89.4k', change: '82% of limit',    color: '#ff9800' },
-            { label: 'Revenue',      value: '$3,200',change: '+8% vs last mo',  color: '#4caf50' },
+            { label: 'Total Users', value: '1,284', change: '+12% this month', color: '#4caf50' },
+            { label: 'Active Now', value: '47',    change: 'across 3 orgs', color: '#888'    },
+            { label: 'API Calls', value: '89.4k', change: '82% of limit', color: '#ff9800' },
+            { label: 'Revenue', value: '$3,200',change: '+8% vs last mo', color: '#4caf50' },
           ].map(card => (
             <div key={card.label} style={{
               background: '#fff', borderRadius: 10, padding: '18px 20px',
