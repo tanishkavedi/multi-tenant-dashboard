@@ -52,7 +52,7 @@ router.post('/register', async (req, res) => {
       { expiresIn: '7d' }
     )
 
-    res.status(201).json({ token, user, org })
+    res.status(201).json({ token, user, org: { ...org, role: 'owner' } })
 
   } catch (err) {
     console.error(err)
