@@ -1,15 +1,5 @@
 import { Navigate } from 'react-router-dom'
 
-
-// helper: decode JWT without a library
-function parseToken(token) {
-  try {
-    const base64 = token.split('.')[1]
-    return JSON.parse(atob(base64))
-  } catch {
-    return null
-  }import { Navigate } from 'react-router-dom'
-
 // helper: decode JWT without a library
 function parseToken(token) {
   try {
@@ -38,26 +28,5 @@ export default function ProtectedRoute({ children, allowedRoles }) {
   }
 
   //  All good → show the page
-  return children
-}
-}
-
-
-export default function ProtectedRoute({ children, allowedRoles }) {
-  const token = localStorage.getItem('token')
-  const user  = JSON.parse(localStorage.getItem('user'))
-  const org   = JSON.parse(localStorage.getItem('org'))
-
-  // Not logged in at all → go to login
-  if (!token || !user) {
-    return <Navigate to="/login" />
-  }
-
-  // Role not allowed → go to dashboard with a message
-  if (allowedRoles && !allowedRoles.includes(org?.role)) {
-    return <Navigate to="/dashboard?error=unauthorized" />
-  }
-
-  // All good → show the page
   return children
 }
