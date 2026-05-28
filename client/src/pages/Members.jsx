@@ -12,9 +12,9 @@ const ROLE_COLORS = {
 
 export default function Members() {
   const navigate = useNavigate()
-  const user     = JSON.parse(localStorage.getItem('user'))
-  const org      = JSON.parse(localStorage.getItem('org'))
-  const token    = localStorage.getItem('token')
+  const user = JSON.parse(localStorage.getItem('user'))
+  const org = JSON.parse(localStorage.getItem('org'))
+  const token = localStorage.getItem('token')
 
   const [members, setMembers]   = useState([])
   const [email, setEmail]       = useState('')
