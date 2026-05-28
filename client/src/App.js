@@ -1,11 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Register from './pages/Register'
 import Login from './pages/Login'
-
-function Dashboard() {
-  const user = JSON.parse(localStorage.getItem('user'))
-  return <h2>Welcome {user?.name}! Dashboard coming soon.</h2>
-}
+import Dashboard from './pages/Dashboard'
 
 export default function App() {
   return (
