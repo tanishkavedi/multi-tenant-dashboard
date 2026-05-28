@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate , useLocation } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 const chartData = [
@@ -13,6 +13,9 @@ const chartData = [
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
+  const unauthorized = searchParams.get('error') === 'unauthorized'
   
   const user = JSON.parse(localStorage.getItem('user'))
   const org = JSON.parse(localStorage.getItem('org'))
@@ -25,42 +28,40 @@ export default function Dashboard() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'sans-serif' }}>
 
+     
       {/* ── SIDEBAR ── */}
       <div style={{
         width: 200, background: '#1e1e2e', color: '#cdd6f4',
         display: 'flex', flexDirection: 'column', padding: '24px 0'
       }}>
-        {/* Org name */}
         <div style={{ padding: '0 20px 20px', borderBottom: '1px solid #313244' }}>
           <div style={{ fontWeight: 600, fontSize: 15 }}>{org?.name}</div>
           <div style={{ fontSize: 11, color: '#a6adc8', marginTop: 4 }}>
             {org?.plan} plan
           </div>
         </div>
-
-        {/* Nav links */}
+ 
         <nav style={{ flex: 1, marginTop: 12 }}>
           {[
             { label: '🏠  Dashboard', path: '/dashboard' },
-            { label: '👥  Members', path: '/members'   },
-            { label: '💳  Billing', path: '/billing'   },
-            { label: '⚙️  Settings', path: '/settings'  },
+            { label: '👥  Members',   path: '/members'   },
+            { label: '💳  Billing',   path: '/billing'   },
+            { label: '⚙️  Settings',  path: '/settings'  },
           ].map(item => (
             <div
               key={item.path}
               onClick={() => navigate(item.path)}
               style={{
                 padding: '10px 20px', cursor: 'pointer', fontSize: 13,
-                background: window.location.pathname === item.path ? '#313244' : 'transparent',
-                borderLeft: window.location.pathname === item.path ? '3px solid #89b4fa' : '3px solid transparent',
+                background: location.pathname === item.path ? '#313244' : 'transparent',
+                borderLeft: location.pathname === item.path ? '3px solid #89b4fa' : '3px solid transparent',
               }}
             >
               {item.label}
             </div>
           ))}
         </nav>
-
-        {/* Logout */}
+ 
         <div
           onClick={handleLogout}
           style={{ padding: '12px 20px', cursor: 'pointer', fontSize: 13, color: '#f38ba8' }}
@@ -68,10 +69,10 @@ export default function Dashboard() {
           🚪  Logout
         </div>
       </div>
-
+ 
       {/* ── MAIN CONTENT ── */}
       <div style={{ flex: 1, background: '#f8f9fa', padding: 32 }}>
-
+ 
         {/* Header */}
         <div style={{ marginBottom: 28 }}>
           <h2 style={{ margin: 0 }}>Good morning, {user?.name} 👋</h2>
@@ -79,14 +80,25 @@ export default function Dashboard() {
             Here's what's happening at {org?.name}
           </p>
         </div>
-
+ 
+        {/* Unauthorized message — only shows when redirected from a blocked page */}
+        {unauthorized && (
+          <div style={{
+            background: '#fee2e2', border: '1px solid #fca5a5',
+            borderRadius: 8, padding: '12px 16px',
+            color: '#b91c1c', fontSize: 13, marginBottom: 20
+          }}>
+            🚫 You don't have permission to access that page.
+          </div>
+        )}
+ 
         {/* Metric cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
           {[
             { label: 'Total Users', value: '1,284', change: '+12% this month', color: '#4caf50' },
-            { label: 'Active Now', value: '47',    change: 'across 3 orgs', color: '#888'    },
-            { label: 'API Calls', value: '89.4k', change: '82% of limit', color: '#ff9800' },
-            { label: 'Revenue', value: '$3,200',change: '+8% vs last mo', color: '#4caf50' },
+            { label: 'Active Now',  value: '47',    change: 'across 3 orgs',   color: '#888'    },
+            { label: 'API Calls',   value: '89.4k', change: '82% of limit',    color: '#ff9800' },
+            { label: 'Revenue',     value: '$3,200',change: '+8% vs last mo',  color: '#4caf50' },
           ].map(card => (
             <div key={card.label} style={{
               background: '#fff', borderRadius: 10, padding: '18px 20px',
@@ -98,7 +110,7 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-
+ 
         {/* Chart */}
         <div style={{
           background: '#fff', borderRadius: 10, padding: 24,
@@ -114,7 +126,7 @@ export default function Dashboard() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-
+ 
       </div>
     </div>
   )
