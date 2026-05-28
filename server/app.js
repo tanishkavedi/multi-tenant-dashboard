@@ -1,6 +1,6 @@
 
 const express = require('express')
-const cors    = require('cors')
+const cors = require('cors')
 require('dotenv').config()
 
 const authRoutes = require('./routes/auth')
@@ -8,9 +8,6 @@ const memberRoutes  = require('./routes/members')
 const billingRoutes = require('./routes/billing') 
 
 const app = express()
-
-app.use('/api/billing/webhook', express.raw({ type: 'application/json' }))
-
 
 app.use(cors())
 app.use(express.json()) 
