@@ -3,7 +3,9 @@ import Register from './pages/Register'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Members   from './pages/Members'
+import Billing   from './pages/Billing'
 import ProtectedRoute from './components/ProtectedRoute'
+
 
 
 export default function App() {
@@ -21,6 +23,14 @@ export default function App() {
           </ProtectedRoute>
         } />
 
+        <Route path="/billing" element={
+           <ProtectedRoute allowedRoles={['owner', 'admin']}>
+             <Billing />
+          </ProtectedRoute>
+             }
+          />
+
+          
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
