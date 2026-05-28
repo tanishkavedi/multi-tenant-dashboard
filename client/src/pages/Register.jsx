@@ -29,10 +29,10 @@ export default function Register() {
       <h2>Create your account</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <input name="name"     placeholder="Your name"         onChange={handleChange} required />
-        <input name="email"    placeholder="Email"    type="email"    onChange={handleChange} required />
+        <input name="name" placeholder="Your name"  onChange={handleChange} required />
+        <input name="email" placeholder="Email"    type="email" onChange={handleChange} required />
         <input name="password" placeholder="Password" type="password" onChange={handleChange} required />
-        <input name="orgName"  placeholder="Company name"      onChange={handleChange} required />
+        <input name="orgName"  placeholder="Company name" onChange={handleChange} required />
         <button type="submit">Register</button>
       </form>
       <p>Already have an account? <a href="/login">Login</a></p>
