@@ -1,6 +1,7 @@
 const express = require('express')
 const pool = require('../db')
 const jwt = require('jsonwebtoken')
+const requireRole = require('../middleware/rbac')
 
 const router = express.Router()
 
@@ -35,7 +36,7 @@ router.get('/', auth, async (req, res) => {
 })
 
 // INVITE: add a new member directly (simplified) 
-router.post('/invite', auth, async (req, res) => {
+router.post('/invite', auth, requireRole('owner', 'admin'), async (req, res) => {
   const { email, role } = req.body
 
   try {
@@ -73,7 +74,7 @@ router.post('/invite', auth, async (req, res) => {
 })
 
 // REMOVE a member 
-router.delete('/:userId', auth, async (req, res) => {
+router.delete('/:userId', auth, requireRole('owner'),  async (req, res) => {
   try {
     // Prevent owner from removing themselves
     if (req.params.userId === req.user.userId)
