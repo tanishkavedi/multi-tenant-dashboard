@@ -13,6 +13,7 @@ const chartData = [
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  
   const user = JSON.parse(localStorage.getItem('user'))
   const org = JSON.parse(localStorage.getItem('org'))
 
