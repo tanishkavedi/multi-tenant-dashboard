@@ -17,6 +17,7 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>} />
+
           <Route path="/members" element={
           <ProtectedRoute allowedRoles={['owner', 'admin']}>
             <Members />
@@ -24,13 +25,13 @@ export default function App() {
         } />
 
         <Route path="/billing" element={
-           <ProtectedRoute allowedRoles={['owner', 'admin']}>
+           <ProtectedRoute allowedRoles={['owner']}>
              <Billing />
           </ProtectedRoute>
              }
           />
 
-          
+
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
