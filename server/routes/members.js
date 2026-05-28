@@ -1,10 +1,10 @@
 const express = require('express')
-const pool    = require('../db')
-const jwt     = require('jsonwebtoken')
+const pool = require('../db')
+const jwt = require('jsonwebtoken')
 
 const router = express.Router()
 
-// ── MIDDLEWARE: verify token on every request ──────────────
+// MIDDLEWARE: verify token on every request 
 const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1]
   if (!token) return res.status(401).json({ error: 'No token' })
@@ -16,7 +16,7 @@ const auth = (req, res, next) => {
   }
 }
 
-// ── GET all members of the org ──────────────────────────────
+// GET all members of the org 
 router.get('/', auth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -34,12 +34,12 @@ router.get('/', auth, async (req, res) => {
   }
 })
 
-// ── INVITE: add a new member directly (simplified) ─────────
+// INVITE: add a new member directly (simplified) 
 router.post('/invite', auth, async (req, res) => {
   const { email, role } = req.body
 
   try {
-    // 1. Check if user exists
+    //  Check if user exists
     const userResult = await pool.query(
       'SELECT id FROM users WHERE email = $1', [email]
     )
@@ -49,7 +49,7 @@ router.post('/invite', auth, async (req, res) => {
 
     const invitedUser = userResult.rows[0]
 
-    // 2. Check if already a member
+    //  Check if already a member
     const alreadyMember = await pool.query(
       'SELECT id FROM org_members WHERE org_id = $1 AND user_id = $2',
       [req.user.orgId, invitedUser.id]
@@ -57,7 +57,7 @@ router.post('/invite', auth, async (req, res) => {
     if (alreadyMember.rows.length > 0)
       return res.status(400).json({ error: 'User is already a member' })
 
-    // 3. Add them to the org
+    //  Add them to the org
     await pool.query(
       `INSERT INTO org_members (org_id, user_id, role)
        VALUES ($1, $2, $3)`,
@@ -72,7 +72,7 @@ router.post('/invite', auth, async (req, res) => {
   }
 })
 
-// ── REMOVE a member ─────────────────────────────────────────
+// REMOVE a member 
 router.delete('/:userId', auth, async (req, res) => {
   try {
     // Prevent owner from removing themselves
