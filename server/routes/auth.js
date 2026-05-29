@@ -10,6 +10,17 @@ const router = express.Router()
 router.post('/register', async (req, res) => {
   const { name, email, password, orgName } = req.body
 
+
+  if (!name || !email || !password || !orgName)
+    return res.status(400).json({ error: 'All fields are required' })
+
+  if (password.length < 8)
+    return res.status(400).json({ error: 'Password must be at least 8 characters' })
+
+  if (!email.includes('@'))
+    return res.status(400).json({ error: 'Invalid email address' })
+
+  
   try {
     //  Check if email already exists
     const existing = await pool.query(
