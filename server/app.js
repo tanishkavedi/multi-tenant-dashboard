@@ -13,7 +13,9 @@ const settingsRoutes = require('./routes/settings')
 
 const app = express()
 
-app.use(helmet())
+app.use(helmet({
+  crossOriginResourcePolicy: false
+}))
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -31,11 +33,10 @@ const authLimiter = rateLimit({
 app.use('/api/auth/', authLimiter)
 
 
-
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000'
+  origin: ['http://localhost:3000', process.env.CLIENT_URL].filter(Boolean),
+  credentials: true
 }))
-
 
 app.use(express.json()) 
 
