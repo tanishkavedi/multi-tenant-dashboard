@@ -107,10 +107,10 @@ router.post('/login', async (req, res) => {
 
     res.json({ token, user: { id: user.id, name: user.name, email: user.email },org: { ...org, role: org.role } })
 
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Something went wrong' })
-  }
+  }  catch (err) {
+  console.error('REGISTER ERROR:', err.message)
+  res.status(500).json({ error: err.message })
+}
 })
 
 module.exports = router

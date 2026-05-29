@@ -1,7 +1,7 @@
 const express = require('express')
-const pool = require('../../db')
+const pool = require('../db')
 const jwt = require('jsonwebtoken')
-const requireRole = require('../../middleware/rbac')
+const requireRole = require('../middleware/rbac')
 
 const router = express.Router()
 
