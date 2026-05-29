@@ -43,10 +43,11 @@ export default function Dashboard() {
  
         <nav style={{ flex: 1, marginTop: 12 }}>
           {[
-            { label: '🏠  Dashboard', path: '/dashboard' },
-            { label: '👥  Members',   path: '/members'   },
-            { label: '💳  Billing',   path: '/billing'   },
-            { label: '⚙️  Settings',  path: '/settings'  },
+            { label: '🏠  Dashboard', path: '/dashboard'},
+            { label: '📊  Analytics', path: '/analytics'},
+            { label: '👥  Members', path: '/members' },
+            { label: '💳  Billing', path: '/billing' },
+            { label: '⚙️  Settings', path: '/settings' },
           ].map(item => (
             <div
               key={item.path}

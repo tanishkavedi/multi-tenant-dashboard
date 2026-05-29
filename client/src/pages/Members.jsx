@@ -87,9 +87,10 @@ export default function Members() {
         <nav style={{ flex: 1, marginTop: 12 }}>
           {[
             { label: '🏠  Dashboard', path: '/dashboard' },
-            { label: '👥  Members',   path: '/members'   },
-            { label: '💳  Billing',   path: '/billing'   },
-            { label: '⚙️  Settings',  path: '/settings'  },
+            { label: '📊  Analytics',  path: '/analytics'},
+            { label: '👥  Members',  path: '/members'},
+            { label: '💳  Billing', path: '/billing'},
+            { label: '⚙️  Settings', path: '/settings'},
           ].map(item => (
             <div key={item.path} onClick={() => navigate(item.path)} style={{
               padding: '10px 20px', cursor: 'pointer', fontSize: 13,
