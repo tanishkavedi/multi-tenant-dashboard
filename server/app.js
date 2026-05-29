@@ -8,6 +8,8 @@ require('dotenv').config()
 const authRoutes = require('./routes/auth')
 const memberRoutes  = require('./routes/members') 
 const billingRoutes = require('./routes/billing') 
+const settingsRoutes = require('./routes/settings')
+
 
 const app = express()
 
@@ -41,6 +43,7 @@ app.use(express.json())
 app.use('/api/auth', authRoutes)
 app.use('/api/members', memberRoutes)
 app.use('/api/billing', billingRoutes)
+app.use('/api/settings', settingsRoutes)
 
 
 app.get('/', (req, res) => {
