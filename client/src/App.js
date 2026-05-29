@@ -6,6 +6,7 @@ import Members  from './pages/Members'
 import Billing  from './pages/Billing'
 import Settings  from './pages/Settings'
 import ProtectedRoute from './components/ProtectedRoute'
+import Analytics from './pages/Analytics'
 
 
 
@@ -18,6 +19,10 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>} />
+
+          <Route path="/analytics" element={
+          <ProtectedRoute><Analytics /></ProtectedRoute>
+        } />
 
           <Route path="/members" element={
           <ProtectedRoute allowedRoles={['owner', 'admin']}>
