@@ -1,6 +1,8 @@
 
 const express = require('express')
 const cors = require('cors')
+const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
 require('dotenv').config()
 
 const authRoutes = require('./routes/auth')
@@ -9,7 +11,30 @@ const billingRoutes = require('./routes/billing')
 
 const app = express()
 
-app.use(cors())
+app.use(helmet())
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: 'Too many requests, please slow down!' }
+})
+app.use('/api/', limiter)
+
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Too many attempts, try again in 15 minutes' }
+})
+app.use('/api/auth/', authLimiter)
+
+
+
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:3000'
+}))
+
+
 app.use(express.json()) 
 
 
