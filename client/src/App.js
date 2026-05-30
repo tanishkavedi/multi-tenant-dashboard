@@ -11,6 +11,7 @@ import AcceptInvite from './pages/AcceptInvite'
 import ActivityLog from './pages/ActivityLog' 
 import ApiKeys from './pages/ApiKeys'
 import OrgPicker from './pages/OrgPicker' 
+import AdminPanel from './pages/AdminPanel'
 
 
 export default function App() {
@@ -56,7 +57,11 @@ export default function App() {
 
            <Route path="/pick-org" element={<OrgPicker />} />  
 
-           
+           <Route path="/admin" element={
+           <ProtectedRoute><AdminPanel /></ProtectedRoute>
+           } />
+
+
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
