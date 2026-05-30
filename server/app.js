@@ -4,7 +4,6 @@ const cors = require('cors')
 const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 require('dotenv').config()
-
 const authRoutes = require('./routes/auth')
 const memberRoutes  = require('./routes/members') 
 const billingRoutes = require('./routes/billing') 
@@ -15,6 +14,7 @@ const notificationRoutes = require('./routes/notifications')
 const invitationRoutes = require('./routes/invitations') 
 const activityRoutes = require('./routes/activity')
 const apiKeyRoutes = require('./routes/apikeys')
+const adminRoutes = require('./routes/admin')  
 
 
 const app = express()
@@ -60,6 +60,8 @@ app.use('/api/notifications', notificationRoutes)
 app.use('/api/invitations', invitationRoutes)
 app.use('/api/activity', activityRoutes) 
 app.use('/api/keys', apiKeyRoutes)
+app.use('/api/admin', adminRoutes) 
+
 
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running!' })
