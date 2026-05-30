@@ -112,8 +112,21 @@ export default function Members() {
       <div style={{ flex: 1, background: 'var(--bg-main)', padding: 32 }}>
 
         {/* Header */}
-        <h2 style={{ margin: '0 0 4px', color: 'var(--text-primary)' }}>Team Members</h2>
-        <p style={{ margin: '0 0 24px', color: 'var(--text-secondary)', fontSize: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+  <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>Team Members</h2>
+  <button
+    onClick={handleExport}
+    style={{
+      padding: '8px 16px', borderRadius: 8, border: 'none',
+      background: 'var(--accent)', color: '#1e1e2e',
+      fontWeight: 600, fontSize: 13, cursor: 'pointer',
+      display: 'flex', alignItems: 'center', gap: 6
+    }}
+  >
+    📤 Export CSV
+  </button>
+</div>
+<p style={{ margin: '0 0 24px', color: 'var(--text-secondary)', fontSize: 14 }}>
           {search
             ? `${filteredMembers.length} result${filteredMembers.length !== 1 ? 's' : ''} for "${search}"`
             : `${members.length} member${members.length !== 1 ? 's' : ''} in ${org?.name}`
