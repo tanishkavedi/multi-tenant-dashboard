@@ -61,7 +61,9 @@ export default function Sidebar() {
       )
       setAvatarUrl(`http://localhost:5000${res.data.avatarUrl}`)
     } catch (err) {
-      alert('Upload failed. Max size is 2MB.')
+       console.error('Upload error:', err.response?.data)
+        alert(err.response?.data?.error || 'Upload failed. Try a JPG or PNG under 5MB.')
+
     } finally {
       setUploading(false)
     }
