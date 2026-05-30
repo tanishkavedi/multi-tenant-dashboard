@@ -7,6 +7,7 @@ import Billing  from './pages/Billing'
 import Settings  from './pages/Settings'
 import ProtectedRoute from './components/ProtectedRoute'
 import Analytics from './pages/Analytics'
+import AcceptInvite from './pages/AcceptInvite'
 
 
 
@@ -41,6 +42,9 @@ export default function App() {
           <ProtectedRoute allowedRoles={['owner']}><Settings /></ProtectedRoute>   
         } />
 
+         <Route path="/invite/accept" element={<AcceptInvite />} />
+
+         
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
