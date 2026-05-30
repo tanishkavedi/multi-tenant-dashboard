@@ -55,10 +55,7 @@ router.put('/org', auth, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Could not update organization' })
   }
-})
-
-
-// log activity
+  // log activity
 await pool.query(
   `INSERT INTO activity_logs (org_id, user_id, action, details)
    VALUES ($1, $2, $3, $4)`,
@@ -66,6 +63,10 @@ await pool.query(
    'org_updated',
    `Organization name changed to ${name}`]
 )
+})
+
+
+
 
 //  UPDATE user name 
 router.put('/profile', auth, async (req, res) => {
