@@ -73,9 +73,11 @@ export default function Sidebar() {
   const navItems = [
     { label: '🏠  Dashboard', path: '/dashboard' },
     { label: '📊  Analytics', path: '/analytics' },
+    { label: '📋  Activity',  path: '/activity' },
     { label: '👥  Members', path: '/members', roles: ['owner', 'admin'] },
     { label: '💳  Billing', path: '/billing', roles: ['owner'] },
     { label: '⚙️  Settings', path: '/settings', roles: ['owner'] },
+    
   ].filter(item => !item.roles || item.roles.includes(role))
 
   return (
