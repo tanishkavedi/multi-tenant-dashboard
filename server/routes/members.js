@@ -65,6 +65,13 @@ router.post('/invite', auth, requireRole('owner', 'admin'), async (req, res) => 
       [req.user.orgId, invitedUser.id, role || 'member']
     )
 
+     await pool.query(
+      `INSERT INTO notifications (org_id, user_id, message, type)
+       VALUES ($1, $2, $3, 'success')`,
+      [req.user.orgId, req.user.userId,
+       `${invitedUser.name} was added to the organization as ${role || 'member'}`]
+    )
+
     res.json({ message: 'Member added successfully!' })
 
   } catch (err) {
@@ -80,10 +87,21 @@ router.delete('/:userId', auth, requireRole('owner'),  async (req, res) => {
     if (req.params.userId === req.user.userId)
       return res.status(400).json({ error: 'You cannot remove yourself' })
 
-    await pool.query(
-      'DELETE FROM org_members WHERE org_id = $1 AND user_id = $2',
+    // get member name before deleting
+    const memberResult = await pool.query(
+      `SELECT u.name FROM users u
+       JOIN org_members m ON m.user_id = u.id
+       WHERE m.org_id = $1 AND u.id = $2`,
       [req.user.orgId, req.params.userId]
     )
+
+    await pool.query(
+      `INSERT INTO notifications (org_id, user_id, message, type)
+       VALUES ($1, $2, $3, 'warning')`,
+      [req.user.orgId, req.user.userId,
+       `${memberName} was removed from the organization`]
+    )
+
     res.json({ message: 'Member removed' })
   } catch (err) {
     console.error(err)
