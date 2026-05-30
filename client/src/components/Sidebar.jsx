@@ -4,30 +4,23 @@ import { useTheme } from '../context/ThemeContext'
 import axios from 'axios'
 
 export default function Sidebar() {
-  const navigate = useNavigate()
-  const location = useLocation()
+  const navigate   = useNavigate()
+  const location    = useLocation()
   const { theme, toggleTheme } = useTheme()
-  const fileInputRef = useRef()
+  const fileInputRef  = useRef()
 
-  const org  = JSON.parse(localStorage.getItem('org'))
-  const user = JSON.parse(localStorage.getItem('user'))
- 
-
-  // decode role from token
+  const org   = JSON.parse(localStorage.getItem('org'))
+  const user  = JSON.parse(localStorage.getItem('user'))
   const token = localStorage.getItem('token')
+  const orgs  = JSON.parse(localStorage.getItem('orgs') || '[]')  // all orgs
 
   const [avatarUrl, setAvatarUrl] = useState(null)
   const [uploading, setUploading] = useState(false)
 
-
   let role = 'member'
   if (token) {
-    try {
-      role = JSON.parse(atob(token.split('.')[1])).role
-    } catch {}
+    try { role = JSON.parse(atob(token.split('.')[1])).role } catch {}
   }
-
-
 
   // fetch avatar on load
   useEffect(() => {
@@ -43,11 +36,9 @@ export default function Sidebar() {
   const handleFileChange = async (e) => {
     const file = e.target.files[0]
     if (!file) return
-
     setUploading(true)
     const formData = new FormData()
     formData.append('avatar', file)
-
     try {
       const res = await axios.post(
         'http://localhost:5000/api/upload/avatar',
@@ -61,24 +52,20 @@ export default function Sidebar() {
       )
       setAvatarUrl(`http://localhost:5000${res.data.avatarUrl}`)
     } catch (err) {
-       console.error('Upload error:', err.response?.data)
-        alert(err.response?.data?.error || 'Upload failed. Try a JPG or PNG under 5MB.')
-
+      alert(err.response?.data?.error || 'Upload failed. Try a JPG or PNG under 5MB.')
     } finally {
       setUploading(false)
     }
   }
 
-
   const navItems = [
-    { label: '🏠  Dashboard', path: '/dashboard' },
-    { label: '📊  Analytics', path: '/analytics' },
-    { label: '📋  Activity',  path: '/activity' },
-    { label: '👥  Members', path: '/members', roles: ['owner', 'admin'] },
-    { label: '💳  Billing', path: '/billing', roles: ['owner'] },
-    { label: '🔑  API Keys',   path: '/api-keys',  roles: ['owner'] },
-    { label: '⚙️  Settings', path: '/settings', roles: ['owner'] },
-    
+    { label: '🏠  Dashboard',  path: '/dashboard'  },
+    { label: '📊  Analytics',  path: '/analytics'  },
+    { label: '📋  Activity',  path: '/activity'  },
+    { label: '👥  Members',  path: '/members',  roles: ['owner', 'admin'] },
+    { label: '💳  Billing',  path: '/billing',  roles: ['owner']  },
+    { label: '🔑  API Keys',  path: '/api-keys',  roles: ['owner'] },
+    { label: '⚙️  Settings',  path: '/settings',  roles: ['owner'] },
   ].filter(item => !item.roles || item.roles.includes(role))
 
   return (
@@ -87,15 +74,28 @@ export default function Sidebar() {
       display: 'flex', flexDirection: 'column', padding: '24px 0',
       minHeight: '100vh', flexShrink: 0
     }}>
-      {/* Org name */}
-      <div style={{ padding: '0 20px 20px', borderBottom: '1px solid #313244' }}>
+
+      {/* ── Org name + switcher ── */}
+      <div style={{ padding: '0 20px 16px', borderBottom: '1px solid #313244' }}>
         <div style={{ fontWeight: 600, fontSize: 15 }}>{org?.name}</div>
         <div style={{ fontSize: 11, color: '#a6adc8', marginTop: 4 }}>
           {org?.plan} plan
         </div>
+        {/* Show switch button only if user belongs to multiple orgs */}
+        {orgs.length > 1 && (
+          <div
+            onClick={() => navigate('/pick-org')}
+            style={{
+              marginTop: 8, fontSize: 11, color: 'var(--accent)',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4
+            }}
+          >
+            🔄 Switch org
+          </div>
+        )}
       </div>
 
-       {/* User avatar + name */}
+      {/* ── User avatar + name ── */}
       <div style={{
         padding: '14px 20px',
         borderBottom: '1px solid #313244',
@@ -125,7 +125,6 @@ export default function Sidebar() {
               {user?.name?.slice(0, 2).toUpperCase()}
             </div>
           )}
-
           {/* Camera icon overlay */}
           <div style={{
             position: 'absolute', bottom: 0, right: 0,
@@ -138,7 +137,7 @@ export default function Sidebar() {
           </div>
         </div>
 
-         {/* Hidden file input */}
+        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -155,9 +154,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      
-
-      {/* Nav links */}
+      {/* ── Nav links ── */}
       <nav style={{ flex: 1, marginTop: 8 }}>
         {navItems.map(item => (
           <div
@@ -175,7 +172,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Dark/Light toggle */}
+      {/* ── Dark/Light toggle ── */}
       <div
         onClick={toggleTheme}
         style={{
@@ -187,7 +184,7 @@ export default function Sidebar() {
         {theme === 'light' ? '🌙  Dark mode' : '☀️  Light mode'}
       </div>
 
-      {/* Logout */}
+      {/* ── Logout ── */}
       <div
         onClick={() => { localStorage.clear(); navigate('/login') }}
         style={{ padding: '12px 20px', cursor: 'pointer', fontSize: 13, color: 'var(--danger)' }}
