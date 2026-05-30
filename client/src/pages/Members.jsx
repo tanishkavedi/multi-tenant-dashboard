@@ -86,6 +86,18 @@ export default function Members() {
       alert(err.response?.data?.error || 'Could not remove')
     }
   }
+    const handleExport = () => {
+  const link = document.createElement('a')
+  link.href = `http://localhost:5000/api/members/export`
+  link.setAttribute('download', 'members.csv')
+
+  // add token as query param since we can't set headers on download
+  link.href = `http://localhost:5000/api/members/export?token=${token}`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+}
+
 
   // filtered members based on search
   const filteredMembers = members.filter(m =>
