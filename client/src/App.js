@@ -9,6 +9,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Analytics from './pages/Analytics'
 import AcceptInvite from './pages/AcceptInvite'
 import ActivityLog from './pages/ActivityLog' 
+import ApiKeys from './pages/ApiKeys'
 
 
 
@@ -48,6 +49,11 @@ export default function App() {
          <Route path="/activity" element={
          <ProtectedRoute><ActivityLog /></ProtectedRoute>
            } />
+
+           <Route path="/api-keys" element={
+           <ProtectedRoute allowedRoles={['owner']}><ApiKeys /></ProtectedRoute>
+            } />
+
 
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
