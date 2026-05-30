@@ -113,6 +113,16 @@ router.delete('/:userId', auth, requireRole('owner'),  async (req, res) => {
        `${memberName} was removed from the organization`]
     )
 
+    // log activity
+await pool.query(
+  `INSERT INTO activity_logs (org_id, user_id, action, details)
+   VALUES ($1, $2, $3, $4)`,
+  [req.user.orgId, req.user.userId,
+   'member_removed',
+   `Removed ${memberName} from the organization`]
+)
+
+
     res.json({ message: 'Member removed' })
   } catch (err) {
     console.error(err)
