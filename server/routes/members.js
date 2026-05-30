@@ -129,5 +129,42 @@ await pool.query(
     res.status(500).json({ error: 'Could not remove member' })
   }
 })
+  //  EXPORT members as CSV 
+router.get('/export', auth, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT u.name, u.email, m.role, m.joined_at
+       FROM org_members m
+       JOIN users u ON u.id = m.user_id
+       WHERE m.org_id = $1
+       ORDER BY m.joined_at ASC`,
+      [req.user.orgId]
+    )
+
+    // build CSV string
+    const headers = 'Name,Email,Role,Joined At'
+    const rows = result.rows.map(m =>
+      `"${m.name}","${m.email}","${m.role}","${new Date(m.joined_at).toLocaleDateString()}"`
+    )
+    const csv = [headers, ...rows].join('\n')
+
+    // send as downloadable file
+    res.setHeader('Content-Type', 'text/csv')
+    res.setHeader('Content-Disposition', 'attachment; filename="members.csv"')
+    res.send(csv)
+
+    // log activity
+    await pool.query(
+      `INSERT INTO activity_logs (org_id, user_id, action, details)
+       VALUES ($1, $2, $3, $4)`,
+      [req.user.orgId, req.user.userId,
+       'export', 'Members list exported as CSV']
+    )
+
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Could not export members' })
+  }
+})
 
 module.exports = router
