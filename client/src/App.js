@@ -8,6 +8,7 @@ import Settings  from './pages/Settings'
 import ProtectedRoute from './components/ProtectedRoute'
 import Analytics from './pages/Analytics'
 import AcceptInvite from './pages/AcceptInvite'
+import ActivityLog from './pages/ActivityLog' 
 
 
 
@@ -44,7 +45,10 @@ export default function App() {
 
          <Route path="/invite/accept" element={<AcceptInvite />} />
 
-         
+         <Route path="/activity" element={
+         <ProtectedRoute><ActivityLog /></ProtectedRoute>
+           } />
+
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
