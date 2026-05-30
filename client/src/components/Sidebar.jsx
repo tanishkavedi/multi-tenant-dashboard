@@ -76,6 +76,7 @@ export default function Sidebar() {
     { label: '📋  Activity',  path: '/activity' },
     { label: '👥  Members', path: '/members', roles: ['owner', 'admin'] },
     { label: '💳  Billing', path: '/billing', roles: ['owner'] },
+    { label: '🔑  API Keys',   path: '/api-keys',  roles: ['owner'] },
     { label: '⚙️  Settings', path: '/settings', roles: ['owner'] },
     
   ].filter(item => !item.roles || item.roles.includes(role))
