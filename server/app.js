@@ -14,6 +14,7 @@ const uploadRoutes = require('./routes/upload')
 const notificationRoutes = require('./routes/notifications')
 const invitationRoutes = require('./routes/invitations') 
 const activityRoutes = require('./routes/activity')
+const apiKeyRoutes = require('./routes/apikeys')
 
 
 const app = express()
@@ -58,6 +59,7 @@ app.use('/api/upload', uploadRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/invitations', invitationRoutes)
 app.use('/api/activity', activityRoutes) 
+app.use('/api/keys', apiKeyRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'Server is running!' })
