@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import Sidebar from '../components/Sidebar'
+import NotificationBell from '../components/NotificationBell'
 
 const chartData = [
   { day: 'Mon', calls: 320 },
@@ -28,13 +29,13 @@ export default function Dashboard() {
 
         <div style={{ marginBottom: 28 }}>
           <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>
-            Good morning, {user?.name} 👋
+            Hii, {user?.name} 👋
           </h2>
           <p style={{ margin: '4px 0 0', color: 'var(--text-secondary)', fontSize: 14 }}>
             Here's what's happening at {org?.name}
           </p>
         </div>
-
+            <NotificationBell />
         {unauthorized && (
           <div style={{
             background: '#fee2e2', border: '1px solid #fca5a5',
