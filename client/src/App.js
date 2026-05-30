@@ -10,7 +10,7 @@ import Analytics from './pages/Analytics'
 import AcceptInvite from './pages/AcceptInvite'
 import ActivityLog from './pages/ActivityLog' 
 import ApiKeys from './pages/ApiKeys'
-
+import OrgPicker from './pages/OrgPicker' 
 
 
 export default function App() {
@@ -54,7 +54,9 @@ export default function App() {
            <ProtectedRoute allowedRoles={['owner']}><ApiKeys /></ProtectedRoute>
             } />
 
+           <Route path="/pick-org" element={<OrgPicker />} />  
 
+           
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
