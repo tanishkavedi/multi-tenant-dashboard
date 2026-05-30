@@ -70,10 +70,10 @@ router.post('/', auth, async (req, res) => {
       prefix: keyPrefix
     })
 
-  } catch (err) {
-    console.error(err)
-    res.status(500).json({ error: 'Could not create API key' })
-  }
+ } catch (err) {
+  console.error('API KEY ERROR:', err.message)
+  res.status(500).json({ error: err.message })
+}
 })
 
 //  REVOKE (deactivate) a key 
