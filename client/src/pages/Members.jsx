@@ -20,6 +20,8 @@ export default function Members() {
   const [message, setMessage] = useState('')
   const [error,  setError]   = useState('')
   const [loading, setLoading] = useState(false)
+  const [tab, setTab] = useState('add')
+  const [inviteEmail, setInviteEmail] = useState('')
 
   const fetchMembers = async () => {
     try {
@@ -54,6 +56,24 @@ export default function Members() {
       setLoading(false)
     }
   }
+
+  const handleEmailInvite = async (e) => {
+  e.preventDefault()
+  setMessage(''); setError(''); setLoading(true)
+  try {
+    const res = await axios.post(
+      'http://localhost:5000/api/invitations/send',
+      { email: inviteEmail, role },
+      { headers: { Authorization: `Bearer ${token}` } }
+    )
+    setMessage(res.data.message)
+    setInviteEmail('')
+  } catch (err) {
+    setError(err.response?.data?.error || 'Could not send invite')
+  } finally {
+    setLoading(false)
+  }
+}
 
   const handleRemove = async (userId) => {
     if (!window.confirm('Remove this member?')) return
@@ -107,6 +127,58 @@ export default function Members() {
             }}
           />
         </div>
+
+        {/* Tabs */}
+<div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+  <button
+    onClick={() => setTab('add')}
+    style={{
+      padding: '7px 16px', borderRadius: 6, fontSize: 13, cursor: 'pointer',
+      border: 'none',
+      background: tab === 'add' ? 'var(--accent)' : 'var(--bg-card)',
+      color: tab === 'add' ? '#1e1e2e' : 'var(--text-secondary)',
+      fontWeight: tab === 'add' ? 600 : 400
+    }}
+  >
+    ➕ Add existing user
+  </button>
+  <button
+    onClick={() => setTab('invite')}
+    style={{
+      padding: '7px 16px', borderRadius: 6, fontSize: 13, cursor: 'pointer',
+      border: 'none',
+      background: tab === 'invite' ? 'var(--accent)' : 'var(--bg-card)',
+      color: tab === 'invite' ? '#1e1e2e' : 'var(--text-secondary)',
+      fontWeight: tab === 'invite' ? 600 : 400
+    }}
+  >
+    📧 Send email invite
+  </button>
+</div>
+
+{tab === 'invite' && (
+  <form onSubmit={handleEmailInvite} style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+    <input
+      type="email"
+      placeholder="Their email address"
+      value={inviteEmail}
+      onChange={e => setInviteEmail(e.target.value)}
+      required
+      style={{
+        flex: 1, minWidth: 200, padding: '8px 12px', borderRadius: 6,
+        border: '1px solid var(--border)', fontSize: 13,
+        background: 'var(--bg-main)', color: 'var(--text-primary)'
+      }}
+    />
+    <button type="submit" disabled={loading} style={{
+      padding: '8px 18px', borderRadius: 6, border: 'none',
+      background: 'var(--accent)', color: '#1e1e2e',
+      fontWeight: 600, fontSize: 13, cursor: 'pointer'
+    }}>
+      {loading ? 'Sending...' : '📧 Send Invite'}
+    </button>
+  </form>
+)}
 
         {/* Invite form */}
         <div style={{
@@ -203,7 +275,7 @@ export default function Members() {
                 <span style={{
                   fontSize: 12, padding: '3px 10px', borderRadius: 20, fontWeight: 500,
                   background: ROLE_COLORS[m.role]?.bg,
-                  color:      ROLE_COLORS[m.role]?.color,
+                  color:  ROLE_COLORS[m.role]?.color,
                 }}>
                   {m.role}
                 </span>
