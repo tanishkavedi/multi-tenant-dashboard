@@ -11,6 +11,7 @@ const billingRoutes = require('./routes/billing')
 const settingsRoutes = require('./routes/settings')
 const analyticsRoutes = require('./routes/analytics')
 const uploadRoutes = require('./routes/upload') 
+const notificationRoutes = require('./routes/notifications')
 
 
 
@@ -53,6 +54,7 @@ app.use('/api/billing', billingRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/analytics', analyticsRoutes)  
 app.use('/api/upload', uploadRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 
 app.get('/', (req, res) => {
