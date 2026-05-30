@@ -164,4 +164,44 @@ router.post('/switch-org', async (req, res) => {
   }
 })
 
+router.post('/switch-org', async (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1]
+  if (!token) return res.status(401).json({ error: 'No token' })
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    const { orgId } = req.body
+
+    // verify user actually belongs to this org
+    const memberResult = await pool.query(
+      `SELECT m.role, o.* FROM org_members m
+       JOIN organizations o ON o.id = m.org_id
+       WHERE m.user_id = $1 AND m.org_id = $2`,
+      [decoded.userId, orgId]
+    )
+
+    if (memberResult.rows.length === 0)
+      return res.status(403).json({ error: 'You do not belong to this organization' })
+
+    const org = memberResult.rows[0]
+
+    // issue new token scoped to the selected org
+    const newToken = jwt.sign(
+      { userId: decoded.userId, orgId: org.id, role: org.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    )
+
+    res.json({
+      token: newToken,
+      org:   { ...org }
+    })
+
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Could not switch org' })
+  }
+})
+
+
 module.exports = router
