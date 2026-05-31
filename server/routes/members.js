@@ -1,12 +1,14 @@
-const express = require('express')
+const express     = require('express')
 const pool = require('../db')
-const jwt = require('jsonwebtoken')
+const jwt  = require('jsonwebtoken')
 const requireRole = require('../middleware/rbac')
+const PLANS = require('../config/plans')  
 
 const router = express.Router()
 
-// MIDDLEWARE: verify token on every request 
+//  auth middleware 
 const auth = (req, res, next) => {
+  // check header OR query param (for file downloads)
   const token = req.headers.authorization?.split(' ')[1] || req.query.token
   if (!token) return res.status(401).json({ error: 'No token' })
   try {
@@ -17,7 +19,7 @@ const auth = (req, res, next) => {
   }
 }
 
-// GET all members of the org 
+//  GET all members of the org 
 router.get('/', auth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -35,22 +37,40 @@ router.get('/', auth, async (req, res) => {
   }
 })
 
-// INVITE: add a new member directly (simplified) 
+//  INVITE: add a new member 
 router.post('/invite', auth, requireRole('owner', 'admin'), async (req, res) => {
   const { email, role } = req.body
 
   try {
-    //  Check if user exists
-    const userResult = await pool.query(
-      'SELECT id FROM users WHERE email = $1', [email]
+    //  Check member limit 
+    const orgResult = await pool.query(
+      'SELECT plan FROM organizations WHERE id = $1',
+      [req.user.orgId]
     )
+    const plan  = orgResult.rows[0]?.plan || 'free'
+    const planLimit = PLANS[plan]?.maxMembers || 2
 
+    const memberCount = await pool.query(
+      'SELECT COUNT(*) as count FROM org_members WHERE org_id = $1',
+      [req.user.orgId]
+    )
+    const currentCount = parseInt(memberCount.rows[0].count)
+
+    if (currentCount >= planLimit)
+      return res.status(403).json({
+        error: `You've reached the ${planLimit} member limit for the ${plan} plan. Please upgrade to add more members.`
+      })
+
+    //  Check if user exists 
+    const userResult = await pool.query(
+      'SELECT id, name FROM users WHERE email = $1', [email]
+    )
     if (userResult.rows.length === 0)
       return res.status(404).json({ error: 'No user found with that email. They must register first.' })
 
     const invitedUser = userResult.rows[0]
 
-    //  Check if already a member
+    //  Check if already a member 
     const alreadyMember = await pool.query(
       'SELECT id FROM org_members WHERE org_id = $1 AND user_id = $2',
       [req.user.orgId, invitedUser.id]
@@ -58,30 +78,29 @@ router.post('/invite', auth, requireRole('owner', 'admin'), async (req, res) => 
     if (alreadyMember.rows.length > 0)
       return res.status(400).json({ error: 'User is already a member' })
 
-    //  Add them to the org
+    //  Add them to the org 
     await pool.query(
       `INSERT INTO org_members (org_id, user_id, role)
        VALUES ($1, $2, $3)`,
       [req.user.orgId, invitedUser.id, role || 'member']
     )
 
-     await pool.query(
+    //  Log notification 
+    await pool.query(
       `INSERT INTO notifications (org_id, user_id, message, type)
        VALUES ($1, $2, $3, 'success')`,
       [req.user.orgId, req.user.userId,
        `${invitedUser.name} was added to the organization as ${role || 'member'}`]
     )
 
-    // log activity
+    //  Log activity 
     await pool.query(
-       `INSERT INTO activity_logs (org_id, user_id, action,   details)
-         VALUES ($1, $2, $3, $4)`,
-        [req.user.orgId, req.user.userId,
+      `INSERT INTO activity_logs (org_id, user_id, action, details)
+       VALUES ($1, $2, $3, $4)`,
+      [req.user.orgId, req.user.userId,
        'member_added',
        `Added ${invitedUser.name} as ${role || 'member'}`]
-)
-
-
+    )
 
     res.json({ message: 'Member added successfully!' })
 
@@ -91,10 +110,9 @@ router.post('/invite', auth, requireRole('owner', 'admin'), async (req, res) => 
   }
 })
 
-// REMOVE a member 
-router.delete('/:userId', auth, requireRole('owner'),  async (req, res) => {
+//  REMOVE a member 
+router.delete('/:userId', auth, requireRole('owner'), async (req, res) => {
   try {
-    // Prevent owner from removing themselves
     if (req.params.userId === req.user.userId)
       return res.status(400).json({ error: 'You cannot remove yourself' })
 
@@ -105,7 +123,14 @@ router.delete('/:userId', auth, requireRole('owner'),  async (req, res) => {
        WHERE m.org_id = $1 AND u.id = $2`,
       [req.user.orgId, req.params.userId]
     )
+    const memberName = memberResult.rows[0]?.name || 'A member'
 
+    await pool.query(
+      'DELETE FROM org_members WHERE org_id = $1 AND user_id = $2',
+      [req.user.orgId, req.params.userId]
+    )
+
+    // log notification
     await pool.query(
       `INSERT INTO notifications (org_id, user_id, message, type)
        VALUES ($1, $2, $3, 'warning')`,
@@ -114,22 +139,23 @@ router.delete('/:userId', auth, requireRole('owner'),  async (req, res) => {
     )
 
     // log activity
-await pool.query(
-  `INSERT INTO activity_logs (org_id, user_id, action, details)
-   VALUES ($1, $2, $3, $4)`,
-  [req.user.orgId, req.user.userId,
-   'member_removed',
-   `Removed ${memberName} from the organization`]
-)
-
+    await pool.query(
+      `INSERT INTO activity_logs (org_id, user_id, action, details)
+       VALUES ($1, $2, $3, $4)`,
+      [req.user.orgId, req.user.userId,
+       'member_removed',
+       `Removed ${memberName} from the organization`]
+    )
 
     res.json({ message: 'Member removed' })
+
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Could not remove member' })
   }
 })
-  //  EXPORT members as CSV 
+
+//  EXPORT members as CSV 
 router.get('/export', auth, async (req, res) => {
   try {
     const result = await pool.query(
@@ -141,14 +167,12 @@ router.get('/export', auth, async (req, res) => {
       [req.user.orgId]
     )
 
-    // build CSV string
     const headers = 'Name,Email,Role,Joined At'
     const rows = result.rows.map(m =>
       `"${m.name}","${m.email}","${m.role}","${new Date(m.joined_at).toLocaleDateString()}"`
     )
     const csv = [headers, ...rows].join('\n')
 
-    // send as downloadable file
     res.setHeader('Content-Type', 'text/csv')
     res.setHeader('Content-Disposition', 'attachment; filename="members.csv"')
     res.send(csv)

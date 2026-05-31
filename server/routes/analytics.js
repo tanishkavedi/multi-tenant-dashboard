@@ -4,6 +4,7 @@ const pool = require('../db')
 const jwt = require('jsonwebtoken')
 
 const router = express.Router()
+const PLANS = require('../config/plans')
 
 //  auth middleware 
 const auth = (req, res, next) => {
