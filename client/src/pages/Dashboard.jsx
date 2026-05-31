@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import Sidebar from '../components/Sidebar'
 import NotificationBell from '../components/NotificationBell'
+import UsageLimits from '../components/UsageLimits'
 
 const chartData = [
   { day: 'Mon', calls: 320 },
@@ -45,6 +46,8 @@ export default function Dashboard() {
             🚫 You don't have permission to access that page.
           </div>
         )}
+
+        <UsageLimits />
 
         {/* Metric cards */}
         <div style={{
